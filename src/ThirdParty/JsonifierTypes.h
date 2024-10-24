@@ -9,8 +9,8 @@
 #include "JsonifierCountry.h"
 #include "JsonifierTwitter.h"
 
-template<typename value_type> concept performance_data = std::same_as<std::remove_cvref_t<value_type>, twitter_message> 
-|| std::same_as<std::remove_cvref_t<value_type>, citm_catalog_message> 
+template<typename value_type> concept performance_data = std::same_as<std::remove_cvref_t<value_type>, twitter_message>
+|| std::same_as<std::remove_cvref_t<value_type>, citm_catalog_message>
 || std::same_as<std::remove_cvref_t<value_type>, canada_message>;
 
 template<> struct jsonifier::core<geometry_data> {
@@ -186,9 +186,9 @@ template<> struct jsonifier::core<Obj2> {
 	>();
 };
 
-template<typename value_type> jsonifier::vector<value_type> parseJsonArray(const jsonifier::raw_json_data& inputData) noexcept {
+template<typename value_type> jsonifier::vector<value_type> parseJsonArray(jsonifier::vector<jsonifier::raw_json_data> inputData) noexcept {
 	jsonifier::vector<value_type> returnValues{};
-	for (auto& value : inputData.operator jsonifier::vector<jsonifier::raw_json_data, 0>()) {
+	for (auto& value : inputData) {
 		if constexpr (std::is_same_v<value_type, std::string>) {
 			returnValues.emplace_back(static_cast<value_type>(static_cast<jsonifier::string>(value)));
 		}
@@ -199,8 +199,178 @@ template<typename value_type> jsonifier::vector<value_type> parseJsonArray(const
 	return returnValues;
 }
 
+template<const auto& options, typename buffer_type, typename serialize_context_type>
+void serializeRawJson(buffer_type& buffer, const Special& rawData, serialize_context_type& serializePair) {
+	buffer[serializePair.index] = '{';
+	++serializePair.index;
+	std::memcpy(&buffer[serializePair.index], "\"integer\":", std::size("\"integer\":") - 1);
+	serializePair.index += std::size("\"integer\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.integer, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"real\":", std::size("\"real\":") - 1);
+	serializePair.index += std::size("\"real\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.real, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"e\":", std::size("\"e\":") - 1);
+	serializePair.index += std::size("\"e\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.e, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"E\":", std::size("\"E\":") - 1);
+	serializePair.index += std::size("\"E\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.E, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"\":", std::size("\"\":") - 1);
+	serializePair.index += std::size("\"\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.emptyKey, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"zero\":", std::size("\"zero\":") - 1);
+	serializePair.index += std::size("\"zero\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.zero, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"one\":", std::size("\"one\":") - 1);
+	serializePair.index += std::size("\"one\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.one, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"space\":", std::size("\"space\":") - 1);
+	serializePair.index += std::size("\"space\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.space, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"quote\":", std::size("\"quote\":") - 1);
+	serializePair.index += std::size("\"quote\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.quote, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"backslash\":", std::size("\"backslash\":") - 1);
+	serializePair.index += std::size("\"backslash\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.backslash, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"controls\":", std::size("\"controls\":") - 1);
+	serializePair.index += std::size("\"controls\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.controls, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"slash\":", std::size("\"slash\":") - 1);
+	serializePair.index += std::size("\"slash\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.slash, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"alpha\":", std::size("\"alpha\":") - 1);
+	serializePair.index += std::size("\"alpha\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.alpha, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"ALPHA\":", std::size("\"ALPHA\":") - 1);
+	serializePair.index += std::size("\"ALPHA\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.ALPHA, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"digit\":", std::size("\"digit\":") - 1);
+	serializePair.index += std::size("\"digit\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.digit, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"0123456789\":", std::size("\"0123456789\":") - 1);
+	serializePair.index += std::size("\"0123456789\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.number, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"special\":", std::size("\"special\":") - 1);
+	serializePair.index += std::size("\"special\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.special, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"hex\":", std::size("\"hex\":") - 1);
+	serializePair.index += std::size("\"hex\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.hex, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"true\":", std::size("\"true\":") - 1);
+	serializePair.index += std::size("\"true\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.aTrue, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"false\":", std::size("\"false\":") - 1);
+	serializePair.index += std::size("\"false\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.aFalse, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"null\":", std::size("\"null\":") - 1);
+	serializePair.index += std::size("\"null\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.null, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"array\":", std::size("\"array\":") - 1);
+	serializePair.index += std::size("\"array\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.array, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"object\":", std::size("\"object\":") - 1);
+	serializePair.index += std::size("\"object\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.object, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"address\":", std::size("\"address\":") - 1);
+	serializePair.index += std::size("\"address\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.address, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"url\":", std::size("\"url\":") - 1);
+	serializePair.index += std::size("\"url\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.url, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"comment\":", std::size("\"comment\":") - 1);
+	serializePair.index += std::size("\"comment\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.comment, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"# -- --> */\":", std::size("\"# -- --> */\":") - 1);
+	serializePair.index += std::size("\"# -- --> */\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.commentKey, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\" s p a c e d \":", std::size("\" s p a c e d \":") - 1);
+	serializePair.index += std::size("\" s p a c e d \":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.spaced, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"compact\":", std::size("\"compact\":") - 1);
+	serializePair.index += std::size("\"compact\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.compact, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"jsontext\":", std::size("\"jsontext\":") - 1);
+	serializePair.index += std::size("\"jsontext\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.jsontext, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"quotes\":", std::size("\"quotes\":") - 1);
+	serializePair.index += std::size("\"quotes\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.quotes, buffer, serializePair);
+
+	buffer[serializePair.index++] = ',';
+	std::memcpy(&buffer[serializePair.index], "\"\\/\\\\\"\\uCAFE\\uBABE\\uAB98\\uFCDE\\ubcda\\uef4A\\b\\f\\n\\r\\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?\":",
+		std::size("\"\\/\\\\\"\\uCAFE\\uBABE\\uAB98\\uFCDE\\ubcda\\uef4A\\b\\f\\n\\r\\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?\":") - 1);
+	serializePair.index += std::size("\"\\/\\\\\"\\uCAFE\\uBABE\\uAB98\\uFCDE\\ubcda\\uef4A\\b\\f\\n\\r\\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?\":") - 1;
+	jsonifier_internal::serialize<options>::impl(rawData.key, buffer, serializePair);
+
+	buffer[serializePair.index] = '}';
+	++serializePair.index;
+	return;
+}
+
 Special parseRawJson(const jsonifier::raw_json_data& rawData) {
-	auto specialData = rawData;
+	auto specialData = rawData.operator std::unordered_map<jsonifier::string_base<char, 0Ui64>, jsonifier::raw_json_data, std::hash<jsonifier::string_base<char, 0Ui64>>,
+		std::equal_to<jsonifier::string_base<char, 0Ui64>>, std::allocator<std::pair<const jsonifier::string, jsonifier::raw_json_data>>>();
 
 	Special specialStruct;
 	specialStruct.integer = specialData["integer"].operator int64_t();
@@ -210,7 +380,7 @@ Special parseRawJson(const jsonifier::raw_json_data& rawData) {
 	specialStruct.emptyKey = specialData[""].operator double();
 	specialStruct.zero = specialData["zero"].operator int64_t();
 	specialStruct.one = specialData["one"].operator int64_t();
-	specialStruct.space = specialData[std::string("space")].operator jsonifier::string();
+	specialStruct.space = specialData["space"].operator jsonifier::string();
 	specialStruct.quote = specialData["quote"].operator jsonifier::string();
 	specialStruct.backslash = specialData["backslash"].operator jsonifier::string();
 	specialStruct.controls = specialData["controls"].operator jsonifier::string();
@@ -224,18 +394,25 @@ Special parseRawJson(const jsonifier::raw_json_data& rawData) {
 	specialStruct.aTrue = specialData["true"].operator bool();
 	specialStruct.aFalse = specialData["false"].operator bool();
 	specialStruct.null = nullptr;
-	specialStruct.array = parseJsonArray<int64_t>(specialData["array"]);
+	auto newArray = specialData["array"].operator jsonifier::vector<jsonifier::raw_json_data>();
+	specialStruct.array = parseJsonArray<int64_t>(newArray);
 	specialStruct.object = Empty{};
 	specialStruct.address = specialData["address"].operator jsonifier::string();
 	specialStruct.url = specialData["url"].operator jsonifier::string();
 	specialStruct.comment = specialData["comment"].operator jsonifier::string();
 	specialStruct.commentKey = specialData["# -- --> */"].operator jsonifier::string();
-	specialStruct.spaced = parseJsonArray<int64_t>(specialData[" s p a c e d "]);
-	specialStruct.compact = parseJsonArray<int64_t>(specialData["compact"]);
+	newArray = specialData[" s p a c e d "].operator jsonifier::vector<jsonifier::raw_json_data>();
+	specialStruct.spaced = parseJsonArray<int64_t>(newArray);
+	newArray = specialData["compact"].operator jsonifier::vector<jsonifier::raw_json_data>();
+	specialStruct.compact = parseJsonArray<int64_t>(newArray);
 	specialStruct.jsontext = specialData["jsontext"].operator jsonifier::string();
 	specialStruct.quotes = specialData["quotes"].operator jsonifier::string();
-	specialStruct.key = specialData["\\/\\\"\\uCAFE\\uBABE\\uAB98\\uFCDE\\ubcda\\uef4A\\b\\f\\n\\r\\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?"].operator jsonifier::string();
-
+	specialStruct.key = specialData["\\/\\\\\"\\uCAFE\\uBABE\\uAB98\\uFCDE\\ubcda\\uef4A\\b\\f\\n\\r\\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?"].operator jsonifier::string();
+	for (auto& [key, value] : specialData) {
+		if (key.find("1~!@#$%^&*()_+-=[]{}|;") != std::string::npos) {
+			specialStruct.key = static_cast<std::string>(value.operator jsonifier::string());
+		}
+	}
 	return specialStruct;
 }
 
@@ -244,7 +421,18 @@ template<> struct jsonifier::core<Empty> {
 	static constexpr auto parseValue = createValue();
 };
 
+template<typename value_type>
+concept special_type = std::is_same_v<Special, std::remove_cvref_t<value_type>>;
+
 namespace jsonifier_internal {
+
+	template<jsonifier::serialize_options options, special_type value_type, jsonifier::concepts::buffer_like buffer_type, typename serialize_context_type>
+	struct serialize_impl<options, value_type, buffer_type, serialize_context_type> {
+		JSONIFIER_MAYBE_ALWAYS_INLINE static void impl(value_type& value, buffer_type& buffer, serialize_context_type& serializePair) noexcept {
+			serializeRawJson<options>(buffer, value, serializePair);
+		}
+	};
+
 	template<bool minified, jsonifier::parse_options options, typename parse_context_type> struct parse_impl<minified, options, Special, parse_context_type> {
 		JSONIFIER_ALWAYS_INLINE static void impl(Special& value, parse_context_type& context) noexcept {
 			jsonifier::raw_json_data rawData{};
@@ -253,6 +441,7 @@ namespace jsonifier_internal {
 		}
 	};
 }
+
 
 namespace JsonifierTypes
 {
