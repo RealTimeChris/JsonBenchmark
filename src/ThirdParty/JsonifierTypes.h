@@ -429,14 +429,14 @@ namespace jsonifier_internal {
 	template<jsonifier::serialize_options options, special_type value_type, jsonifier::concepts::buffer_like buffer_type, typename serialize_context_type>
 	struct serialize_impl<options, value_type, buffer_type, serialize_context_type> {
 		JSONIFIER_MAYBE_ALWAYS_INLINE static void impl(value_type& value, buffer_type& buffer, serialize_context_type& serializePair) noexcept {
-			jsonifier::serialize_options optionsNew{ options };
+			static constexpr jsonifier::serialize_options optionsNew{ options };
 			serializeRawJson<optionsNew>(buffer, value, serializePair);
 		}
 	};
 
 	template<bool minified, jsonifier::parse_options options, typename parse_context_type> struct parse_impl<minified, options, Special, parse_context_type> {
 		JSONIFIER_ALWAYS_INLINE static void impl(Special& value, parse_context_type& context) noexcept {
-			jsonifier::parse_options optionsNew{ options };
+			static constexpr jsonifier::parse_options optionsNew{ options };
 			jsonifier::raw_json_data rawData{};
 			parse_impl<minified, optionsNew, jsonifier::raw_json_data, parse_context_type>::impl(rawData, context);
 			value = parseRawJson(rawData);
