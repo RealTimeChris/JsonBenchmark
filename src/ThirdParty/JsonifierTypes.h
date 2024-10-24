@@ -193,7 +193,7 @@ template<typename value_type> jsonifier::vector<value_type> parseJsonArray(jsoni
 			returnValues.emplace_back(static_cast<value_type>(static_cast<jsonifier::string>(value)));
 		}
 		else {
-			returnValues.emplace_back(static_cast<value_type>(value));
+			returnValues.emplace_back(static_cast<value_type>(static_cast<int64_t>(value)));
 		}
 	}
 	return returnValues;
