@@ -186,18 +186,73 @@ template<> struct jsonifier::core<Obj2> {
 	>();
 };
 
-template<> struct jsonifier::core<Special> {
-	using value_type = Special;
-	static constexpr auto parseValue = createValue("integer", &value_type::integer, "real", &value_type::real, "E", &value_type::E, "zero", &value_type::zero, "one",
-		&value_type::one, "space", &value_type::space, "quote", &value_type::quote, "backslash", &value_type::backslash, "controls", &value_type::controls, "slash",
-		&value_type::slash, "alpha", &value_type::alpha, "ALPHA", &value_type::ALPHA, "0123456789", &value_type::digit, "number", &value_type::number, "special",
-		&value_type::special, "hex", &value_type::hex, "null", &value_type::null, "array", &value_type::array);
-};
+template<typename value_type> jsonifier::vector<value_type> parseJsonArray(const jsonifier::raw_json_data& inputData) noexcept {
+	jsonifier::vector<value_type> returnValues{};
+	for (auto& value : inputData.operator jsonifier::vector<jsonifier::raw_json_data, 0>()) {
+		if constexpr (std::is_same_v<value_type, std::string>) {
+			returnValues.emplace_back(static_cast<value_type>(static_cast<jsonifier::string>(value)));
+		}
+		else {
+			returnValues.emplace_back(static_cast<value_type>(value));
+		}
+	}
+	return returnValues;
+}
+
+Special parseRawJson(const jsonifier::raw_json_data& rawData) {
+	auto specialData = rawData;
+
+	Special specialStruct;
+	specialStruct.integer = specialData["integer"].operator int64_t();
+	specialStruct.real = specialData["real"].operator double();
+	specialStruct.e = specialData["e"].operator double();
+	specialStruct.E = specialData["E"].operator double();
+	specialStruct.emptyKey = specialData[""].operator double();
+	specialStruct.zero = specialData["zero"].operator int64_t();
+	specialStruct.one = specialData["one"].operator int64_t();
+	specialStruct.space = specialData[std::string("space")].operator jsonifier::string();
+	specialStruct.quote = specialData["quote"].operator jsonifier::string();
+	specialStruct.backslash = specialData["backslash"].operator jsonifier::string();
+	specialStruct.controls = specialData["controls"].operator jsonifier::string();
+	specialStruct.slash = specialData["slash"].operator jsonifier::string();
+	specialStruct.alpha = specialData["alpha"].operator jsonifier::string();
+	specialStruct.ALPHA = specialData["ALPHA"].operator jsonifier::string();
+	specialStruct.digit = specialData["digit"].operator jsonifier::string();
+	specialStruct.number = specialData["0123456789"].operator jsonifier::string();
+	specialStruct.special = specialData["special"].operator jsonifier::string();
+	specialStruct.hex = specialData["hex"].operator jsonifier::string();
+	specialStruct.aTrue = specialData["true"].operator bool();
+	specialStruct.aFalse = specialData["false"].operator bool();
+	specialStruct.null = nullptr;
+	specialStruct.array = parseJsonArray<int64_t>(specialData["array"]);
+	specialStruct.object = Empty{};
+	specialStruct.address = specialData["address"].operator jsonifier::string();
+	specialStruct.url = specialData["url"].operator jsonifier::string();
+	specialStruct.comment = specialData["comment"].operator jsonifier::string();
+	specialStruct.commentKey = specialData["# -- --> */"].operator jsonifier::string();
+	specialStruct.spaced = parseJsonArray<int64_t>(specialData[" s p a c e d "]);
+	specialStruct.compact = parseJsonArray<int64_t>(specialData["compact"]);
+	specialStruct.jsontext = specialData["jsontext"].operator jsonifier::string();
+	specialStruct.quotes = specialData["quotes"].operator jsonifier::string();
+	specialStruct.key = specialData["\\/\\\"\\uCAFE\\uBABE\\uAB98\\uFCDE\\ubcda\\uef4A\\b\\f\\n\\r\\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?"].operator jsonifier::string();
+
+	return specialStruct;
+}
 
 template<> struct jsonifier::core<Empty> {
 	using value_type = Empty;
 	static constexpr auto parseValue = createValue();
 };
+
+namespace jsonifier_internal {
+	template<bool minified, jsonifier::parse_options options, typename parse_context_type> struct parse_impl<minified, options, Special, parse_context_type> {
+		JSONIFIER_ALWAYS_INLINE static void impl(Special& value, parse_context_type& context) noexcept {
+			jsonifier::raw_json_data rawData{};
+			parse_impl<minified, options, jsonifier::raw_json_data, parse_context_type>::impl(rawData, context);
+			value = parseRawJson(rawData);
+		}
+	};
+}
 
 namespace JsonifierTypes
 {
