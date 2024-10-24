@@ -369,8 +369,8 @@ void serializeRawJson(buffer_type& buffer, const Special& rawData, serialize_con
 }
 
 Special parseRawJson(const jsonifier::raw_json_data& rawData) {
-	auto specialData = rawData.operator std::unordered_map<jsonifier::string_base<char, 0Ui64>, jsonifier::raw_json_data, std::hash<jsonifier::string_base<char, 0Ui64>>,
-		std::equal_to<jsonifier::string_base<char, 0Ui64>>, std::allocator<std::pair<const jsonifier::string, jsonifier::raw_json_data>>>();
+	auto specialData = rawData.operator std::unordered_map<jsonifier::string_base<char, 0>, jsonifier::raw_json_data, std::hash<jsonifier::string_base<char, 0>>,
+		std::equal_to<jsonifier::string_base<char, 0>>, std::allocator<std::pair<const jsonifier::string, jsonifier::raw_json_data>>>();
 
 	Special specialStruct;
 	specialStruct.integer = specialData["integer"].operator int64_t();
