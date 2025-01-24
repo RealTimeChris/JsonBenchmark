@@ -9,8 +9,8 @@
 #include "JsonifierCountry.h"
 #include "JsonifierTwitter.h"
 
-template<typename value_type> concept performance_data = std::same_as<std::remove_cvref_t<value_type>, twitter_message> 
-|| std::same_as<std::remove_cvref_t<value_type>, citm_catalog_message> 
+template<typename value_type> concept performance_data = std::same_as<std::remove_cvref_t<value_type>, twitter_message>
+|| std::same_as<std::remove_cvref_t<value_type>, citm_catalog_message>
 || std::same_as<std::remove_cvref_t<value_type>, canada_message>;
 
 template<> struct jsonifier::core<geometry_data> {
@@ -184,10 +184,9 @@ template<> struct jsonifier::core<Obj2> {
 
 template<> struct jsonifier::core<Special> {
 	using value_type = Special;
-	static constexpr auto parseValue = createValue("integer", &value_type::integer, "real", &value_type::real, "E", &value_type::E, "zero", &value_type::zero, "one",
-		&value_type::one, "space", &value_type::space, "quote", &value_type::quote, "backslash", &value_type::backslash, "controls", &value_type::controls, "slash",
-		&value_type::slash, "alpha", &value_type::alpha, "ALPHA", &value_type::ALPHA, "0123456789", &value_type::digit, "number", &value_type::number, "special",
-		&value_type::special, "hex", &value_type::hex, "null", &value_type::null, "array", &value_type::array);
+	static constexpr auto parseValue = createValue<&value_type::integer, &value_type::real, &value_type::E, &value_type::zero,
+		&value_type::one, &value_type::space, &value_type::quote, &value_type::backslash, &value_type::controls, &value_type::slash, &value_type::alpha, &value_type::ALPHA, &value_type::digit, &value_type::number,
+		&value_type::special, &value_type::hex, &value_type::null, &value_type::array>();
 };
 
 template<> struct jsonifier::core<Empty> {
