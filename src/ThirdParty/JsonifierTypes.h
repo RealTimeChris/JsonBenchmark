@@ -120,7 +120,7 @@ template<> struct jsonifier::core<twitter_message> {
 
 template<> struct jsonifier::core<audience_sub_category_names> {
 	using value_type = audience_sub_category_names;
-	static constexpr auto parseValue = createValue("337100890", &value_type::the337100890);
+	static constexpr auto parseValue = createValue<makeJsonEntity<&value_type::the337100890, "337100890">()>();
 };
 
 template<> struct jsonifier::core<names> {
