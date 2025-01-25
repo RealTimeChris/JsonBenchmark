@@ -202,7 +202,7 @@ namespace JsonifierTypes
 	class VectorDouble : public TestAction
 	{
 	public:
-		virtual bool ParseDouble(const char* json, long double& reply) const
+		virtual bool ParseDouble(const char* json, double& reply) const
 		{
 			std::vector<double> data;
 			if (parser.parseJson(data, jsonifier::string_view{ json })) {
