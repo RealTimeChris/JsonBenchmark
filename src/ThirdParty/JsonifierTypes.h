@@ -249,7 +249,7 @@ namespace JsonifierTypes {
 	{
 
 	public:
-		virtual JSONIFIER_ALWAYS_INLINE bool Parse(const char* json, size_t length, std::unique_ptr<ParseResultBase>& reply) const
+		virtual JSONIFIER_INLINE bool Parse(const char* json, size_t length, std::unique_ptr<ParseResultBase>& reply) const
 		{
 			std::unique_ptr<GetValueResult<T>>    parsedData = std::make_unique<GetValueResult<T>>();
 			if (parser.parseJson < jsonifier::parse_options{ .knownOrder = true } > (parsedData->data, jsonifier::string_view{ json, length })) {
@@ -257,14 +257,14 @@ namespace JsonifierTypes {
 			}
 			return true;
 		}
-		virtual JSONIFIER_ALWAYS_INLINE bool Stringify(const ParseResultBase& parsedData, std::unique_ptr<StringResultBase>& reply)  const
+		virtual JSONIFIER_INLINE bool Stringify(const ParseResultBase& parsedData, std::unique_ptr<StringResultBase>& reply)  const
 		{
 			GetValueResult<T>const& parsedDataInput = static_cast<GetValueResult<T> const&>(parsedData);
 			reply.reset(new StringResultUsingString{});
 			parser.serializeJson(parsedDataInput.data, static_cast<StringResultUsingString*>(reply.get())->result);
 			return true;
 		}
-		virtual JSONIFIER_ALWAYS_INLINE bool Prettify(const ParseResultBase& parsedData, std::unique_ptr<StringResultBase>& reply) const
+		virtual JSONIFIER_INLINE bool Prettify(const ParseResultBase& parsedData, std::unique_ptr<StringResultBase>& reply) const
 		{
 			GetValueResult<T>const& parsedDataInput = static_cast<GetValueResult<T> const&>(parsedData);
 			reply.reset(new StringResultUsingString{});
